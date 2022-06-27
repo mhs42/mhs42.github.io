@@ -13,7 +13,7 @@ a
 /* navbar styles start */
 a.navbar-link
 {
-    color: black;
+    color: white;
     font-size: 20px;
 }
 
@@ -32,6 +32,7 @@ a.navbar-link
 #backdrop
 {
     display: flex;
+    background-color: #192841;
     flex-direction: column-reverse;
     justify-content: space-around;
     column-gap: 25px;
@@ -63,12 +64,14 @@ img.dp
 {
     font-weight: 700;
     font-size: 32px;
+    color: white;
 }
 
 #backdrop-left-column > p
 {
     font-weight: 400;
     font-size: 16px;
+    color: white;
 }
 
 #backdrop-left-button
@@ -148,6 +151,43 @@ img.dp
     row-gap: 30px;
 }
 
+div.card
+{
+    color: #21243D;
+    font-weight: 400;
+    background-color: white;
+    border-radius: 5px;
+    padding: 20px 22px;
+}
+
+h2.my-h2
+{
+    color: #c3c5df;
+    font-weight: 700;
+    font-size: 26px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 10px 10px;
+}
+
+div.card
+{
+    background-color: #142850;
+}
+
+div.card > span
+{
+    font-size: 18px;
+    padding: 5px 10px;
+    color: white;
+}
+
+div.card > p
+{
+    margin-left: 10px;
+    color: white;
+}
+
 @media screen and (min-width:500px)
 {
     #recent-blog-posts-section
@@ -161,35 +201,11 @@ img.dp
         flex-direction: row;
         column-gap: 1%;
     }
-}
 
-div.card
-{
-    color: #21243D;
-    font-weight: 400;
-    background-color: white;
-    border-radius: 5px;
-    padding: 20px 22px;
-}
-
-h2.my-h2
-{
-    color: #21243D;
-    font-weight: 700;
-    font-size: 26px;
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-
-div.card > span
-{
-    font-size: 18px;
-    padding: 5px 10px;
-}
-
-div.card > p
-{
-    font-size: 16px;
+    div.card > p
+    {
+        font-size: 16px;
+    }
 }
 
 /* recent blogs ends */
@@ -210,15 +226,8 @@ div.horizontal-card
     display: flex;
     flex-direction: column;
     column-gap: 3%;
-}
-
-@media screen and (min-width:500px)
-{
-    div.horizontal-card
-    {
-        row-gap: 20px;
-        flex-direction: row;
-    }
+    background-color: rgb(106, 42, 42);
+    border-radius: 5px;
 }
 
 span.pill
@@ -238,15 +247,36 @@ span.secondary-text
     margin-left: 16px;
 }
 
+div.horizontal-card > div
+{
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
 div.horizontal-card > div > p
 {
-    color: #21243D;
+    color: rgb(222, 194, 194);
     font-size: 16px;
 }
 
 div.horizontal-card > img
 {
     border-radius: 6px;
+}
+
+@media screen and (min-width:500px)
+{
+    div.horizontal-card
+    {
+        row-gap: 20px;
+        flex-direction: row;
+    }
+
+    div.horizontal-card > div
+    {
+        padding-left: 0px;
+        padding-right: 10px;
+    }
 }
 
 /* featured works ends */
@@ -266,7 +296,7 @@ div.horizontal-card > img
 
 #social-media-links-section > a
 {
-    color: #142850;
+    color: white;
 }
 
 /* social media links ends */
