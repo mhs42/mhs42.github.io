@@ -14,11 +14,11 @@
   const BACK_TO_TOP_THRESHOLD = 360;
 
   const ROLES = [
-    "secure enterprise platforms",
-    "full-stack web apps",
-    "Flutter mobile experiences",
-    "LLM-powered workflows",
-    "scalable APIs & systems",
+    "secure enterprise platforms.",
+    "full-stack web apps.",
+    "Flutter mobile experiences.",
+    "LLM-powered workflows.",
+    "scalable APIs & systems.",
   ];
 
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
