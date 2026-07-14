@@ -1,1 +1,1 @@
-https://mhs42.github.io/
+https://mhs42.github.io
