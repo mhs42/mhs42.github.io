@@ -188,7 +188,7 @@
 
       const behavior = prefersReducedMotion ? "auto" : "smooth";
 
-      /* Sticky header as #top only nudges scroll — always go to document top */
+      /* Sticky header as #top only nudges scroll - always go to document top */
       if (id === "#top") {
         window.scrollTo({ top: 0, left: 0, behavior });
         history.pushState(null, "", "#top");
@@ -376,11 +376,18 @@
     }
 
     const subject = encodeURIComponent(`Portfolio inquiry from ${name}`);
-    const body = encodeURIComponent(`${message}\n\n— ${name}\n${email}`);
-    const mailto = `mailto:mhs42@outlook.com?subject=${subject}&body=${body}`;
+    const body = encodeURIComponent(`${message}\n\n- ${name}\n${email}`);
+    const mailto = `mailto:mhs_42@outlook.com?subject=${subject}&body=${body}`;
 
     if (FORM_STATUS) FORM_STATUS.textContent = "Opening your email client…";
     window.location.href = mailto;
     CONTACT_FORM.reset();
+
+    /* mailto has no success callback - clear the interim status shortly after launch */
+    window.setTimeout(() => {
+      if (FORM_STATUS) {
+        FORM_STATUS.textContent = "";
+      }
+    }, 500);
   });
 })();
