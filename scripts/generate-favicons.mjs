@@ -19,8 +19,6 @@ const png = async (size, out) => {
 };
 
 await png(180, "apple-touch-icon.png");
-await png(192, "icon-192.png");
-await png(512, "icon-512.png");
 
 const icoBuffers = await Promise.all(
   [16, 32].map((size) => sharp(svg).resize(size, size).png().toBuffer())
