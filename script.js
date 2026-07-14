@@ -6,10 +6,12 @@
   const NAV_MENU = document.getElementById("nav-menu");
   const NAV_LINKS = [...document.querySelectorAll(".nav__link")];
   const SECTIONS = [...document.querySelectorAll("main section[id]")];
+  const BACK_TO_TOP = document.getElementById("back-to-top");
   const TYPED_EL = document.getElementById("typed-text");
   const YEAR_EL = document.getElementById("year");
   const CONTACT_FORM = document.getElementById("contact-form");
   const FORM_STATUS = document.getElementById("form-status");
+  const BACK_TO_TOP_THRESHOLD = 360;
 
   const ROLES = [
     "secure enterprise platforms",
@@ -151,12 +153,14 @@
   placeNavMenu();
   window.addEventListener("resize", placeNavMenu);
 
-  /* -------- Sticky header shadow -------- */
-  const onScrollHeader = () => {
-    HEADER?.classList.toggle("is-scrolled", window.scrollY > 12);
+  /* -------- Sticky header shadow + back-to-top -------- */
+  const onScrollChrome = () => {
+    const y = window.scrollY;
+    HEADER?.classList.toggle("is-scrolled", y > 12);
+    BACK_TO_TOP?.classList.toggle("is-visible", y > BACK_TO_TOP_THRESHOLD);
   };
-  onScrollHeader();
-  window.addEventListener("scroll", onScrollHeader, { passive: true });
+  onScrollChrome();
+  window.addEventListener("scroll", onScrollChrome, { passive: true });
 
   /* -------- Active nav highlight -------- */
   const setActiveLink = () => {
