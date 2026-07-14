@@ -18,7 +18,7 @@
     "full-stack web apps.",
     "Flutter mobile experiences.",
     "LLM-powered workflows.",
-    "scalable APIs & systems.",
+    "scalable APIs and systems.",
   ];
 
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
