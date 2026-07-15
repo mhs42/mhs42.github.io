@@ -23,27 +23,33 @@
 
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  /* -------- Year -------- */
-  if (YEAR_EL) YEAR_EL.textContent = String(new Date().getFullYear());
+  if (YEAR_EL) {
+    YEAR_EL.textContent = String(new Date().getFullYear());
+  }
 
-  /* -------- Experience since graduation (June 2024) -------- */
   const formatExperience = (startIso) => {
     const start = new Date(startIso);
-    if (Number.isNaN(start.getTime())) return "professional experience";
+    if (Number.isNaN(start.getTime())) {
+      return "professional experience";
+    }
 
     const now = new Date();
-    let totalMonths =
-      (now.getFullYear() - start.getFullYear()) * 12 +
-      (now.getMonth() - start.getMonth());
+    let totalMonths = (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth());
 
-    if (now.getDate() < start.getDate()) totalMonths -= 1;
+    if (now.getDate() < start.getDate()) {
+      totalMonths -= 1;
+    }
     totalMonths = Math.max(0, totalMonths);
 
     const years = Math.floor(totalMonths / 12);
     const months = totalMonths % 12;
 
-    if (years === 0 && months === 0) return "Fresh graduate";
-    if (years === 0) return `${months} mo experience`;
+    if (years === 0 && months === 0) {
+      return "Fresh graduate";
+    }
+    if (years === 0) {
+      return `${months} mo experience`;
+    }
     if (months === 0) {
       return years === 1 ? "1 yr experience" : `${years} yrs experience`;
     }
@@ -58,7 +64,6 @@
     experienceEl.textContent = formatExperience(start);
   }
 
-  /* -------- Mobile nav -------- */
   const MAIN = document.getElementById("main");
   const NAV_CLOSE = document.getElementById("nav-close");
   const FOCUSABLE =
@@ -70,7 +75,9 @@
     );
 
   const setMenuOpen = (open) => {
-    if (!NAV_TOGGLE || !NAV_MENU) return;
+    if (!NAV_TOGGLE || !NAV_MENU) {
+      return;
+    }
 
     NAV_TOGGLE.setAttribute("aria-expanded", String(open));
     NAV_TOGGLE.setAttribute("aria-label", open ? "Close menu" : "Open menu");
@@ -80,7 +87,9 @@
     const mobile = window.matchMedia("(max-width: 1024px)").matches;
     if (mobile) {
       NAV_MENU.setAttribute("aria-hidden", String(!open));
-      if (MAIN) MAIN.toggleAttribute("inert", open);
+      if (MAIN) {
+        MAIN.toggleAttribute("inert", open);
+      }
     } else {
       NAV_MENU.removeAttribute("aria-hidden");
       MAIN?.removeAttribute("inert");
@@ -106,7 +115,9 @@
   });
 
   document.addEventListener("keydown", (e) => {
-    if (!document.body.classList.contains("nav-open")) return;
+    if (!document.body.classList.contains("nav-open")) {
+      return;
+    }
 
     if (e.key === "Escape") {
       e.preventDefault();
@@ -114,12 +125,16 @@
       return;
     }
 
-    if (e.key !== "Tab" || !NAV_MENU) return;
+    if (e.key !== "Tab" || !NAV_MENU) {
+      return;
+    }
 
     const focusables = getFocusable(NAV_MENU);
     const toggleVisible = NAV_TOGGLE && window.getComputedStyle(NAV_TOGGLE).display !== "none";
     const cycle = toggleVisible ? [NAV_TOGGLE, ...focusables] : focusables;
-    if (!cycle.length) return;
+    if (!cycle.length) {
+      return;
+    }
 
     const first = cycle[0];
     const last = cycle[cycle.length - 1];
@@ -134,10 +149,11 @@
     }
   });
 
-  /* Portal mobile menu to <body> so fixed overlay isn't clipped by header */
   const NAV_PARENT = NAV_MENU?.parentElement;
   const placeNavMenu = () => {
-    if (!NAV_MENU || !NAV_PARENT) return;
+    if (!NAV_MENU || !NAV_PARENT) {
+      return;
+    }
     const mobile = window.matchMedia("(max-width: 1024px)").matches;
     if (mobile && NAV_MENU.parentElement !== document.body) {
       document.body.appendChild(NAV_MENU);
@@ -153,7 +169,6 @@
   placeNavMenu();
   window.addEventListener("resize", placeNavMenu);
 
-  /* -------- Sticky header shadow + back-to-top -------- */
   const onScrollChrome = () => {
     const y = window.scrollY;
     HEADER?.classList.toggle("is-scrolled", y > 12);
@@ -162,14 +177,15 @@
   onScrollChrome();
   window.addEventListener("scroll", onScrollChrome, { passive: true });
 
-  /* -------- Active nav highlight -------- */
   const setActiveLink = () => {
     const offset = HEADER ? HEADER.offsetHeight + 24 : 96;
     let current = SECTIONS[0]?.id;
 
     for (const section of SECTIONS) {
       const top = section.getBoundingClientRect().top;
-      if (top - offset <= 0) current = section.id;
+      if (top - offset <= 0) {
+        current = section.id;
+      }
     }
 
     NAV_LINKS.forEach((link) => {
@@ -181,18 +197,18 @@
   window.addEventListener("scroll", setActiveLink, { passive: true });
   setActiveLink();
 
-  /* -------- Smooth scroll -------- */
   document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     anchor.addEventListener("click", (e) => {
       const id = anchor.getAttribute("href");
-      if (!id || id === "#") return;
+      if (!id || id === "#") {
+        return;
+      }
 
       e.preventDefault();
       setMenuOpen(false);
 
       const behavior = prefersReducedMotion ? "auto" : "smooth";
 
-      /* Sticky header as #top only nudges scroll - always go to document top */
       if (id === "#top") {
         window.scrollTo({ top: 0, left: 0, behavior });
         history.pushState(null, "", "#top");
@@ -200,7 +216,9 @@
       }
 
       const target = document.querySelector(id);
-      if (!target) return;
+      if (!target) {
+        return;
+      }
 
       const headerOffset = HEADER ? HEADER.offsetHeight + 8 : 72;
       const top = target.getBoundingClientRect().top + window.scrollY - headerOffset;
@@ -209,7 +227,6 @@
     });
   });
 
-  /* -------- Reveal + skill meters on scroll -------- */
   const revealEls = document.querySelectorAll(".reveal");
 
   if (prefersReducedMotion) {
@@ -230,7 +247,6 @@
     revealEls.forEach((el) => el.classList.add("is-visible"));
   }
 
-  /* -------- Subtle parallax on ambient orbs -------- */
   if (!prefersReducedMotion) {
     const orbs = document.querySelectorAll(".ambient__orb");
     let ticking = false;
@@ -238,7 +254,9 @@
     window.addEventListener(
       "scroll",
       () => {
-        if (ticking) return;
+        if (ticking) {
+          return;
+        }
         ticking = true;
         requestAnimationFrame(() => {
           const y = window.scrollY;
@@ -253,9 +271,10 @@
     );
   }
 
-  /* -------- Typing effect -------- */
   const typeRoles = async () => {
-    if (!TYPED_EL) return;
+    if (!TYPED_EL) {
+      return;
+    }
 
     if (prefersReducedMotion) {
       TYPED_EL.textContent = ROLES[0];
@@ -291,7 +310,6 @@
 
   typeRoles();
 
-  /* -------- Credentials tabs -------- */
   document.querySelectorAll("[data-tabs]").forEach((tabsRoot) => {
     const tabs = [...tabsRoot.querySelectorAll('[role="tab"]')];
     const panels = [...tabsRoot.querySelectorAll('[role="tabpanel"]')];
@@ -315,11 +333,21 @@
       tab.addEventListener("click", () => activate(tab));
       tab.addEventListener("keydown", (e) => {
         let next = null;
-        if (e.key === "ArrowRight") next = tabs[(index + 1) % tabs.length];
-        if (e.key === "ArrowLeft") next = tabs[(index - 1 + tabs.length) % tabs.length];
-        if (e.key === "Home") next = tabs[0];
-        if (e.key === "End") next = tabs[tabs.length - 1];
-        if (!next) return;
+        if (e.key === "ArrowRight") {
+          next = tabs[(index + 1) % tabs.length];
+        }
+        if (e.key === "ArrowLeft") {
+          next = tabs[(index - 1 + tabs.length) % tabs.length];
+        }
+        if (e.key === "Home") {
+          next = tabs[0];
+        }
+        if (e.key === "End") {
+          next = tabs[tabs.length - 1];
+        }
+        if (!next) {
+          return;
+        }
         e.preventDefault();
         next.focus();
         activate(next);
@@ -327,13 +355,14 @@
     });
   });
 
-  /* -------- Course category filters -------- */
   const courseFilters = document.querySelector(".course-filters");
   const coursePills = [...document.querySelectorAll(".course-pill")];
 
   courseFilters?.addEventListener("click", (e) => {
     const btn = e.target.closest("[data-filter]");
-    if (!btn) return;
+    if (!btn) {
+      return;
+    }
 
     const filter = btn.getAttribute("data-filter");
     courseFilters.querySelectorAll(".chip").forEach((chip) => {
@@ -346,7 +375,6 @@
     });
   });
 
-  /* -------- Contact form → mailto -------- */
   CONTACT_FORM?.addEventListener("submit", (e) => {
     e.preventDefault();
 
@@ -375,7 +403,9 @@
     }
 
     if (!valid) {
-      if (FORM_STATUS) FORM_STATUS.textContent = "Please fill in all fields correctly.";
+      if (FORM_STATUS) {
+        FORM_STATUS.textContent = "Please fill in all fields correctly.";
+      }
       return;
     }
 
@@ -383,11 +413,12 @@
     const body = encodeURIComponent(`${message}\n\n- ${name}\n${email}`);
     const mailto = `mailto:mhs_42@outlook.com?subject=${subject}&body=${body}`;
 
-    if (FORM_STATUS) FORM_STATUS.textContent = "Opening your email client…";
+    if (FORM_STATUS) {
+      FORM_STATUS.textContent = "Opening your email client...";
+    }
     window.location.href = mailto;
     CONTACT_FORM.reset();
 
-    /* mailto has no success callback - clear the interim status shortly after launch */
     window.setTimeout(() => {
       if (FORM_STATUS) {
         FORM_STATUS.textContent = "";

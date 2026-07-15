@@ -1,10 +1,3 @@
-/**
- * Regenerate favicon assets from favicon.svg
- *
- * Usage (from repo root):
- *   npm i sharp to-ico
- *   node scripts/generate-favicons.mjs
- */
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";

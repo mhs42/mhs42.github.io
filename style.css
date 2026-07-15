@@ -1,10 +1,4 @@
-/* ============================================
-   Muhammad Haris Saad - Portfolio
-   Premium dark theme · Cyber cyan accents
-   ============================================ */
-
 :root {
-  /* Surfaces */
   --bg-deep: #070b14;
   --bg: #0b1220;
   --bg-elevated: #111a2e;
@@ -13,40 +7,33 @@
   --border: rgba(148, 163, 184, 0.14);
   --border-strong: rgba(34, 211, 238, 0.35);
 
-  /* Text */
   --text: #e8eef8;
   --text-muted: #94a3b8;
   --text-faint: #64748b;
 
-  /* Accent - cyber cyan */
   --accent: #22d3ee;
   --accent-soft: rgba(34, 211, 238, 0.14);
   --accent-glow: rgba(34, 211, 238, 0.35);
   --accent-2: #2dd4bf;
   --danger: #f87171;
 
-  /* Typography */
   --font-sans: "Outfit", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
-  /* Layout */
   --max: 1120px;
   --header-h: 4.25rem;
   --radius: 1rem;
   --radius-sm: 0.625rem;
   --radius-pill: 999px;
 
-  /* Motion */
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --duration: 280ms;
   --duration-slow: 550ms;
 
-  /* Shadows */
   --shadow-glow: 0 0 40px var(--accent-glow);
   --shadow-card: 0 18px 50px rgba(0, 0, 0, 0.35);
 }
 
-/* Reset & base */
 *,
 *::before,
 *::after {
@@ -132,7 +119,6 @@ button {
   color: var(--accent);
 }
 
-/* Ambient background */
 .ambient {
   position: fixed;
   inset: 0;
@@ -196,7 +182,6 @@ button {
   to { transform: translate3d(24px, -30px, 0) scale(1.08); }
 }
 
-/* Header / Nav */
 .scroll-top {
   position: absolute;
   top: 0;
@@ -212,7 +197,6 @@ button {
   top: 0;
   z-index: 200;
   height: var(--header-h);
-  /* Solid bg - avoid backdrop-filter/transform here; they trap position:fixed children */
   background: rgba(7, 11, 20, 0.96);
   border-bottom: 1px solid var(--border);
   transition: box-shadow var(--duration) var(--ease), background var(--duration) var(--ease);
@@ -405,7 +389,6 @@ body.nav-open .site-header {
   transform: rotate(-45deg);
 }
 
-/* Hero */
 .hero {
   max-width: var(--max);
   margin: 0 auto;
@@ -546,7 +529,6 @@ body.nav-open .site-header {
   outline: none;
 }
 
-/* Avatar */
 .hero__visual {
   display: grid;
   place-items: center;
@@ -590,7 +572,6 @@ body.nav-open .site-header {
   to { transform: rotate(360deg); }
 }
 
-/* Sections */
 .section {
   max-width: var(--max);
   margin: 0 auto;
@@ -623,7 +604,6 @@ body.nav-open .site-header {
   font-size: 1.05rem;
 }
 
-/* Glass cards */
 .glass-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -634,7 +614,6 @@ body.nav-open .site-header {
   transition: transform var(--duration) var(--ease), border-color var(--duration) var(--ease), box-shadow var(--duration) var(--ease);
 }
 
-/* Skills */
 .skills-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -717,7 +696,6 @@ body.nav-open .site-header {
   border-color: rgba(34, 211, 238, 0.25);
 }
 
-/* Projects */
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -826,7 +804,6 @@ body.nav-open .site-header {
   outline: none;
 }
 
-/* Timeline */
 .timeline {
   position: relative;
   max-width: 760px;
@@ -925,7 +902,6 @@ body.nav-open .site-header {
   background: var(--accent);
 }
 
-/* Education */
 .edu-stack {
   display: grid;
   gap: 1.15rem;
@@ -1067,7 +1043,6 @@ body.nav-open .site-header {
   color: var(--text);
 }
 
-/* Credentials tabs */
 .tabs__list {
   display: flex;
   flex-wrap: wrap;
@@ -1249,7 +1224,6 @@ body.nav-open .site-header {
   color: var(--text-muted);
 }
 
-/* Contact */
 .contact-layout {
   display: grid;
   grid-template-columns: 0.9fr 1.1fr;
@@ -1353,7 +1327,6 @@ body.nav-open .site-header {
   min-height: 1.25rem;
 }
 
-/* Footer */
 .site-footer {
   border-top: 1px solid var(--border);
   background: rgba(7, 11, 20, 0.65);
@@ -1390,7 +1363,6 @@ body.nav-open .site-header {
   text-align: right;
 }
 
-/* Floating back-to-top */
 .back-to-top {
   position: fixed;
   right: max(1rem, env(safe-area-inset-right, 0px));
@@ -1432,7 +1404,6 @@ body.nav-open .site-header {
   outline: none;
 }
 
-/* Reveal animations */
 .reveal {
   opacity: 0;
   transform: translateY(28px);
@@ -1448,7 +1419,6 @@ body.nav-open .site-header {
   transition-delay: 120ms;
 }
 
-/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 
@@ -1466,7 +1436,6 @@ body.nav-open .site-header {
   }
 }
 
-/* Responsive */
 @media (max-width: 960px) {
   .hero {
     grid-template-columns: 1fr;
