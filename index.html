@@ -860,18 +860,71 @@
             <p class="contact-form__hint">Opens your email client with a prefilled draft.</p>
 
             <div class="field">
-              <label for="name">Name*</label>
-              <input id="name" name="name" type="text" autocomplete="name" required placeholder="Your name">
+              <div class="field__head">
+                <label for="name">Name*</label>
+                <span class="field__count" id="name-count" aria-live="off" aria-atomic="true">
+                  <span class="field__count-visual" aria-hidden="true">0 / 100</span>
+                  <span class="sr-only">0 of 100 characters used</span>
+                </span>
+              </div>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                autocomplete="name"
+                required
+                minlength="1"
+                maxlength="100"
+                aria-describedby="name-count"
+                title="Your full name (1-100 characters)"
+                placeholder="Your name"
+                spellcheck="false"
+              >
             </div>
             <div class="field">
-              <label for="email">Email*</label>
-              <input id="email" name="email" type="email" autocomplete="email" required placeholder="you@example.com">
+              <div class="field__head">
+                <label for="email">Email*</label>
+                <span class="field__count" id="email-count" aria-live="off" aria-atomic="true">
+                  <span class="field__count-visual" aria-hidden="true">0 / 254</span>
+                  <span class="sr-only">0 of 254 characters used</span>
+                </span>
+              </div>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autocomplete="email"
+                required
+                maxlength="254"
+                inputmode="email"
+                aria-describedby="email-count"
+                title="Your email address (max 254 characters)"
+                placeholder="you@example.com"
+                spellcheck="false"
+              >
             </div>
             <div class="field">
-              <label for="message">Message*</label>
-              <textarea id="message" name="message" rows="5" required placeholder="What would you like to build together?"></textarea>
+              <div class="field__head">
+                <label for="message">Message*</label>
+                <span class="field__count" id="message-count" aria-live="off" aria-atomic="true">
+                  <span class="field__count-visual" aria-hidden="true">0 / 2000</span>
+                  <span class="sr-only">0 of 2000 characters used</span>
+                </span>
+              </div>
+              <textarea
+                id="message"
+                name="message"
+                rows="5"
+                required
+                minlength="1"
+                maxlength="2000"
+                aria-describedby="message-count"
+                title="Your message (1-2000 characters)"
+                placeholder="What would you like to build together?"
+                spellcheck="false"
+              ></textarea>
             </div>
-            <button class="btn btn--primary btn--block" type="submit">Compose Email</button>
+            <button class="btn btn--primary btn--block" type="submit" id="compose-email" disabled>Compose Email</button>
             <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
           </form>
         </div>

@@ -484,6 +484,13 @@ body.nav-open .site-header {
   outline: none;
 }
 
+.btn--primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
 .btn--ghost {
   color: var(--text);
   background: var(--surface);
@@ -1291,10 +1298,35 @@ body.nav-open .site-header {
   margin-bottom: 1rem;
 }
 
-.field label {
+.field__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.field__head label {
   font-size: 0.85rem;
   font-weight: 500;
   color: var(--text-muted);
+}
+
+.field__count {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  color: var(--text-faint);
+  transition: color var(--duration) var(--ease);
+}
+
+.field__count.is-near-limit {
+  color: var(--text-muted);
+}
+
+.field__count.is-at-limit {
+  color: var(--danger);
 }
 
 .field input,

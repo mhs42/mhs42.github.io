@@ -375,54 +375,244 @@
     });
   });
 
-  CONTACT_FORM?.addEventListener("submit", (e) => {
-    e.preventDefault();
+  if (CONTACT_FORM) {
+    const composeBtn = CONTACT_FORM.querySelector("#compose-email");
 
-    const nameInput = CONTACT_FORM.querySelector("#name");
-    const emailInput = CONTACT_FORM.querySelector("#email");
-    const messageInput = CONTACT_FORM.querySelector("#message");
+    const LIMITS = Object.freeze({
+      name: Object.freeze({ min: 1, max: 100 }),
+      email: Object.freeze({ min: 3, max: 254 }),
+      message: Object.freeze({ min: 1, max: 2000 }),
+    });
 
-    const name = nameInput?.value.trim() || "";
-    const email = emailInput?.value.trim() || "";
-    const message = messageInput?.value.trim() || "";
+    const MAX_MAILTO_URI_LENGTH = 2000;
 
-    [nameInput, emailInput, messageInput].forEach((el) => el?.classList.remove("is-invalid"));
+    const CONTROL_CHARS = /[\u0000-\u001F\u007F-\u009F]/g;
+    const CONTROL_CHARS_KEEP_LF_TAB = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F]/g;
+    const INVISIBLE_FORMAT = /[\u200B-\u200F\u202A-\u202E\u2060-\u206F\uFEFF\uFFF9-\uFFFB]/g;
+    const LINE_SEPARATORS = /[\r\n\u2028\u2029]+/g;
 
-    let valid = true;
-    if (!name) {
-      nameInput?.classList.add("is-invalid");
-      valid = false;
-    }
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      emailInput?.classList.add("is-invalid");
-      valid = false;
-    }
-    if (!message) {
-      messageInput?.classList.add("is-invalid");
-      valid = false;
-    }
+    const fields = [
+      {
+        key: "name",
+        input: CONTACT_FORM.querySelector("#name"),
+        count: CONTACT_FORM.querySelector("#name-count"),
+      },
+      {
+        key: "email",
+        input: CONTACT_FORM.querySelector("#email"),
+        count: CONTACT_FORM.querySelector("#email-count"),
+      },
+      {
+        key: "message",
+        input: CONTACT_FORM.querySelector("#message"),
+        count: CONTACT_FORM.querySelector("#message-count"),
+        multiline: true,
+      },
+    ];
 
-    if (!valid) {
-      if (FORM_STATUS) {
-        FORM_STATUS.textContent = "Please fill in all fields correctly.";
+    const canonicalize = (value) => String(value ?? "").normalize("NFC");
+
+    const sanitizeSingleLine = (raw, max) =>
+      canonicalize(raw)
+        .replace(LINE_SEPARATORS, " ")
+        .replace(CONTROL_CHARS, "")
+        .replace(INVISIBLE_FORMAT, "")
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, max);
+
+    const sanitizeMultiline = (raw, max) =>
+      canonicalize(raw)
+        .replace(/\r\n?/g, "\n")
+        .replace(CONTROL_CHARS_KEEP_LF_TAB, "")
+        .replace(INVISIBLE_FORMAT, "")
+        .replace(/[ \t]+\n/g, "\n")
+        .replace(/\n{3,}/g, "\n\n")
+        .trim()
+        .slice(0, max);
+
+    const isValidName = (value) => {
+      if (value.length < LIMITS.name.min || value.length > LIMITS.name.max) {
+        return false;
       }
-      return;
-    }
-
-    const subject = encodeURIComponent(`Portfolio inquiry from ${name}`);
-    const body = encodeURIComponent(`${message}\n\n- ${name}\n${email}`);
-    const mailto = `mailto:mhs_42@outlook.com?subject=${subject}&body=${body}`;
-
-    if (FORM_STATUS) {
-      FORM_STATUS.textContent = "Opening your email client...";
-    }
-    window.location.href = mailto;
-    CONTACT_FORM.reset();
-
-    window.setTimeout(() => {
-      if (FORM_STATUS) {
-        FORM_STATUS.textContent = "";
+      if (!/^[\p{L}\p{M}\s.'-]+$/u.test(value)) {
+        return false;
       }
-    }, 500);
-  });
+      return /\p{L}/u.test(value);
+    };
+
+    const isValidEmail = (value) => {
+      if (value.length < LIMITS.email.min || value.length > LIMITS.email.max) {
+        return false;
+      }
+
+      const at = value.lastIndexOf("@");
+      if (at < 1 || at !== value.indexOf("@")) {
+        return false;
+      }
+
+      const local = value.slice(0, at);
+      const domain = value.slice(at + 1);
+
+      if (
+        !local ||
+        !domain ||
+        local.length > 64 ||
+        domain.length > 253 ||
+        local.startsWith(".") ||
+        local.endsWith(".") ||
+        local.includes("..")
+      ) {
+        return false;
+      }
+
+      if (!/^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+$/.test(local)) {
+        return false;
+      }
+
+      const labels = domain.split(".");
+      if (labels.length < 2) {
+        return false;
+      }
+
+      for (const label of labels) {
+        if (!/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/.test(label)) {
+          return false;
+        }
+      }
+
+      return /^[a-z]{2,63}$/.test(labels[labels.length - 1]);
+    };
+
+    const isValidMessage = (value) =>
+      value.length >= LIMITS.message.min && value.length <= LIMITS.message.max;
+
+    const getSecureValues = () => ({
+      name: sanitizeSingleLine(fields[0].input?.value, LIMITS.name.max),
+      email: sanitizeSingleLine(fields[1].input?.value, LIMITS.email.max).toLowerCase(),
+      message: sanitizeMultiline(fields[2].input?.value, LIMITS.message.max),
+    });
+
+    const setFieldValidity = (el, valid) => {
+      if (!el) {
+        return;
+      }
+      el.classList.toggle("is-invalid", !valid);
+      el.setAttribute("aria-invalid", valid ? "false" : "true");
+    };
+
+    const updateCharCount = (field) => {
+      const { input, count, key } = field;
+      if (!input || !count) {
+        return;
+      }
+
+      const max = LIMITS[key].max;
+      const length = input.value.length;
+      const remaining = max - length;
+      const visual = count.querySelector(".field__count-visual");
+      const sr = count.querySelector(".sr-only");
+
+      if (visual) {
+        visual.textContent = `${length} / ${max}`;
+      }
+      if (sr) {
+        sr.textContent = remaining <= 20
+          ? `${remaining} character${remaining === 1 ? "" : "s"} remaining`
+          : `${length} of ${max} characters used`;
+      }
+
+      count.setAttribute("aria-live", remaining <= 20 ? "polite" : "off");
+      count.classList.toggle("is-near-limit", remaining <= Math.ceil(max * 0.1) && remaining > 0);
+      count.classList.toggle("is-at-limit", remaining <= 0);
+    };
+
+    const updateComposeBtn = () => {
+      if (!composeBtn) {
+        return;
+      }
+      const { name, email, message } = getSecureValues();
+      composeBtn.disabled = !(isValidName(name) && isValidEmail(email) && isValidMessage(message));
+    };
+
+    const refreshFieldUi = (field) => {
+      field.input?.classList.remove("is-invalid");
+      field.input?.removeAttribute("aria-invalid");
+      updateCharCount(field);
+      updateComposeBtn();
+    };
+
+    fields.forEach((field) => {
+      field.input?.addEventListener("input", () => refreshFieldUi(field));
+      field.input?.addEventListener("change", () => refreshFieldUi(field));
+      updateCharCount(field);
+    });
+    updateComposeBtn();
+
+    CONTACT_FORM.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const { name, email, message } = getSecureValues();
+
+      if (fields[0].input) {
+        fields[0].input.value = name;
+      }
+      if (fields[1].input) {
+        fields[1].input.value = email;
+      }
+      if (fields[2].input) {
+        fields[2].input.value = message;
+      }
+      fields.forEach(updateCharCount);
+
+      const nameOk = isValidName(name);
+      const emailOk = isValidEmail(email);
+      const messageOk = isValidMessage(message);
+
+      setFieldValidity(fields[0].input, nameOk);
+      setFieldValidity(fields[1].input, emailOk);
+      setFieldValidity(fields[2].input, messageOk);
+
+      if (!nameOk || !emailOk || !messageOk) {
+        if (FORM_STATUS) {
+          FORM_STATUS.textContent = "Please fill in all fields correctly.";
+        }
+        updateComposeBtn();
+        const firstInvalid = [nameOk, emailOk, messageOk].findIndex((ok) => !ok);
+        fields[firstInvalid]?.input?.focus();
+        return;
+      }
+
+      const subject = encodeURIComponent(`Portfolio inquiry from ${name}`);
+      const body = encodeURIComponent(`${message}\n\nRegards,\n${name}.\nEmail: ${email}.`);
+      const mailto = `mailto:mhs_42@outlook.com?subject=${subject}&body=${body}`;
+
+      if (mailto.length > MAX_MAILTO_URI_LENGTH) {
+        if (FORM_STATUS) {
+          FORM_STATUS.textContent = "Message is too long for your email client. Please shorten it.";
+        }
+        setFieldValidity(fields[2].input, false);
+        fields[2].input?.focus();
+        return;
+      }
+
+      if (FORM_STATUS) {
+        FORM_STATUS.textContent = "Opening your email client...";
+      }
+      window.location.href = mailto;
+      CONTACT_FORM.reset();
+      fields.forEach((field) => {
+        field.input?.classList.remove("is-invalid");
+        field.input?.removeAttribute("aria-invalid");
+        updateCharCount(field);
+      });
+      updateComposeBtn();
+
+      window.setTimeout(() => {
+        if (FORM_STATUS) {
+          FORM_STATUS.textContent = "";
+        }
+      }, 500);
+    });
+  }
 })();
