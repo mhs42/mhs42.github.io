@@ -601,7 +601,7 @@
 
       const subject = encodeURIComponent(values.subject);
       const body = encodeURIComponent(
-        `${values.message}\n\nRegards,\n${values.name}.\nEmail: ${values.email}.`
+        `${values.message}\n\nRegards,\n${values.name}.\nEmail: ${values.email}`
       );
       const mailto = `mailto:mhs_42@outlook.com?subject=${subject}&body=${body}`;
 
