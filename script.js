@@ -381,6 +381,7 @@
     const LIMITS = Object.freeze({
       name: Object.freeze({ min: 1, max: 100 }),
       email: Object.freeze({ min: 3, max: 254 }),
+      subject: Object.freeze({ min: 1, max: 150 }),
       message: Object.freeze({ min: 1, max: 2000 }),
     });
 
@@ -403,12 +404,19 @@
         count: CONTACT_FORM.querySelector("#email-count"),
       },
       {
+        key: "subject",
+        input: CONTACT_FORM.querySelector("#subject"),
+        count: CONTACT_FORM.querySelector("#subject-count"),
+      },
+      {
         key: "message",
         input: CONTACT_FORM.querySelector("#message"),
         count: CONTACT_FORM.querySelector("#message-count"),
         multiline: true,
       },
     ];
+
+    const fieldByKey = Object.fromEntries(fields.map((field) => [field.key, field]));
 
     const canonicalize = (value) => String(value ?? "").normalize("NFC");
 
@@ -484,13 +492,28 @@
       return /^[a-z]{2,63}$/.test(labels[labels.length - 1]);
     };
 
+    const isValidSubject = (value) => {
+      if (value.length < LIMITS.subject.min || value.length > LIMITS.subject.max) {
+        return false;
+      }
+      return /^[\p{L}\p{N}\p{P}\p{S} ]+$/u.test(value);
+    };
+
     const isValidMessage = (value) =>
       value.length >= LIMITS.message.min && value.length <= LIMITS.message.max;
 
+    const validators = Object.freeze({
+      name: isValidName,
+      email: isValidEmail,
+      subject: isValidSubject,
+      message: isValidMessage,
+    });
+
     const getSecureValues = () => ({
-      name: sanitizeSingleLine(fields[0].input?.value, LIMITS.name.max),
-      email: sanitizeSingleLine(fields[1].input?.value, LIMITS.email.max).toLowerCase(),
-      message: sanitizeMultiline(fields[2].input?.value, LIMITS.message.max),
+      name: sanitizeSingleLine(fieldByKey.name.input?.value, LIMITS.name.max),
+      email: sanitizeSingleLine(fieldByKey.email.input?.value, LIMITS.email.max).toLowerCase(),
+      subject: sanitizeSingleLine(fieldByKey.subject.input?.value, LIMITS.subject.max),
+      message: sanitizeMultiline(fieldByKey.message.input?.value, LIMITS.message.max),
     });
 
     const setFieldValidity = (el, valid) => {
@@ -531,8 +554,8 @@
       if (!composeBtn) {
         return;
       }
-      const { name, email, message } = getSecureValues();
-      composeBtn.disabled = !(isValidName(name) && isValidEmail(email) && isValidMessage(message));
+      const values = getSecureValues();
+      composeBtn.disabled = !fields.every((field) => validators[field.key](values[field.key]));
     };
 
     const refreshFieldUi = (field) => {
@@ -552,47 +575,42 @@
     CONTACT_FORM.addEventListener("submit", (e) => {
       e.preventDefault();
 
-      const { name, email, message } = getSecureValues();
+      const values = getSecureValues();
 
-      if (fields[0].input) {
-        fields[0].input.value = name;
-      }
-      if (fields[1].input) {
-        fields[1].input.value = email;
-      }
-      if (fields[2].input) {
-        fields[2].input.value = message;
-      }
+      fields.forEach((field) => {
+        if (field.input) {
+          field.input.value = values[field.key];
+        }
+      });
       fields.forEach(updateCharCount);
 
-      const nameOk = isValidName(name);
-      const emailOk = isValidEmail(email);
-      const messageOk = isValidMessage(message);
+      const validity = Object.fromEntries(
+        fields.map((field) => [field.key, validators[field.key](values[field.key])])
+      );
 
-      setFieldValidity(fields[0].input, nameOk);
-      setFieldValidity(fields[1].input, emailOk);
-      setFieldValidity(fields[2].input, messageOk);
+      fields.forEach((field) => setFieldValidity(field.input, validity[field.key]));
 
-      if (!nameOk || !emailOk || !messageOk) {
+      if (!fields.every((field) => validity[field.key])) {
         if (FORM_STATUS) {
           FORM_STATUS.textContent = "Please fill in all fields correctly.";
         }
         updateComposeBtn();
-        const firstInvalid = [nameOk, emailOk, messageOk].findIndex((ok) => !ok);
-        fields[firstInvalid]?.input?.focus();
+        fields.find((field) => !validity[field.key])?.input?.focus();
         return;
       }
 
-      const subject = encodeURIComponent(`Portfolio inquiry from ${name}`);
-      const body = encodeURIComponent(`${message}\n\nRegards,\n${name}.\nEmail: ${email}.`);
+      const subject = encodeURIComponent(values.subject);
+      const body = encodeURIComponent(
+        `${values.message}\n\nRegards,\n${values.name}.\nEmail: ${values.email}.`
+      );
       const mailto = `mailto:mhs_42@outlook.com?subject=${subject}&body=${body}`;
 
       if (mailto.length > MAX_MAILTO_URI_LENGTH) {
         if (FORM_STATUS) {
           FORM_STATUS.textContent = "Message is too long for your email client. Please shorten it.";
         }
-        setFieldValidity(fields[2].input, false);
-        fields[2].input?.focus();
+        setFieldValidity(fieldByKey.message.input, false);
+        fieldByKey.message.input?.focus();
         return;
       }
 

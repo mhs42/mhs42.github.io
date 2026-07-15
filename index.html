@@ -905,6 +905,28 @@
             </div>
             <div class="field">
               <div class="field__head">
+                <label for="subject">Subject*</label>
+                <span class="field__count" id="subject-count" aria-live="off" aria-atomic="true">
+                  <span class="field__count-visual" aria-hidden="true">0 / 150</span>
+                  <span class="sr-only">0 of 150 characters used</span>
+                </span>
+              </div>
+              <input
+                id="subject"
+                name="subject"
+                type="text"
+                autocomplete="off"
+                required
+                minlength="1"
+                maxlength="150"
+                aria-describedby="subject-count"
+                title="Email subject (1-150 characters)"
+                placeholder="What is this about?"
+                spellcheck="false"
+              >
+            </div>
+            <div class="field">
+              <div class="field__head">
                 <label for="message">Message*</label>
                 <span class="field__count" id="message-count" aria-live="off" aria-atomic="true">
                   <span class="field__count-visual" aria-hidden="true">0 / 2000</span>

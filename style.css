@@ -1340,6 +1340,10 @@ body.nav-open .site-header {
   resize: vertical;
 }
 
+.field textarea {
+  min-height: 15rem;
+}
+
 .field input:focus,
 .field textarea:focus {
   outline: none;
